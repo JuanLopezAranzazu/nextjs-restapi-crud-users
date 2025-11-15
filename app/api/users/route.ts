@@ -54,6 +54,15 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // validar email único
+    const existingUser = await User.findOne({ email: data.email });
+    if (existingUser) {
+      return NextResponse.json(
+        { error: "El email ya está registrado" },
+        { status: 400 }
+      );
+    }
+
     // crear usuario
     const newUser = await User.create(data);
     return NextResponse.json(newUser, { status: 201 });

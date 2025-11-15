@@ -58,6 +58,20 @@ export async function PUT(
 
     const data = await req.json();
 
+    // validar email único
+    if (data.email) {
+      const existingUser = await User.findOne({
+        email: data.email,
+        _id: { $ne: id },
+      });
+      if (existingUser) {
+        return NextResponse.json(
+          { error: "El email ya está en uso por otro usuario" },
+          { status: 400 }
+        );
+      }
+    }
+
     // actualizar usuario
     const updated = await User.findByIdAndUpdate(id, data, { new: true });
     if (!updated) {
